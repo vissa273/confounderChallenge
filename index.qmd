@@ -118,9 +118,9 @@ patients_df.head()
 
 Let's use data to figure out which surgeon performs better. @fig-plot-outcomes shows the post-surgical symptom score for 100 patients. Doc Duck's average post-surgical symptom score is 3.38 while Doc Dreamy's average is 2.8. Doc Dreamy performs better since lower scores indicate better outcomes. One might ask if the difference in average post-surgical symptom score is statistically significant. A two-sample t-test reveals a statistically significant difference (t = -2.317, p = 0.023). 
 
-### Challenge Task 1: Recover Figure 1 — Post-Surgical Outcomes by Patient
+## Post-Surgical Outcomes by Patient
 
-**Your task:** Create a scatter plot showing post-surgical symptom scores by patient number, with different markers/colors for each doctor. The figure should include:
+The scatter plot shows post-surgical symptom scores by patient number, with different markers/colors for each doctor. The figure includes:
 
 - Scatter points for each patient (Doc Dreamy: circles, Doc Duck: triangles)
 - Horizontal dashed lines showing the mean for each doctor
@@ -295,9 +295,9 @@ patients_randomized_df.head()
 
 @fig-plot-outcomes-randomized shows the post-surgical symptom score for 100 patients under randomized assignment. Doc Duck's average post-surgical symptom score is 2.71 while Doc Dreamy's average is 3.46. Doc Duck performs better since lower scores indicate better outcomes. With randomization breaking the confounding relationship, we can now properly assess the causal effect. A two-sample t-test reveals a statistically significant difference (t = 2.734, p = 0.007).  **Not only is Dr. Dreamy not the better surgeon, he is actually the worse surgeon!**
 
-### Challenge Task 2: Recover Figure 2 — Randomized Assignment Outcomes
+## Randomized Assignment Outcomes
 
-**Your task:** Create a scatter plot similar to Figure 1, but for the randomized data. The figure should show how randomization breaks the confounding relationship. Include:
+The scatter plot is similar to Figure 1, but uses the randomized data. The figure shows how randomization breaks the confounding relationship. It includes:
 
 - Same styling as Figure 1 (markers, colors, mean lines, annotations)
 - Title should indicate this is randomized assignment
@@ -365,9 +365,9 @@ fig
 
 The key to handling a common cause confounder is to stratify by the common cause. In general, this means we examine the relationship between treatment and outcome within groups that share the same value of the confounder. In our example, this means we look at patients of similar severity and compare the outcomes of the surgeons for patients of similar severity. There are mathematically sophisticated ways to do this, but here we demonstrate it visually. Since patient number lacks inherent meaning, the following figure shows patient severity on the x-axis and post-surgical symptom score on the y-axis.  
 
-### Challenge Task 3: Recover Figure 3 — Outcomes by Patient Severity (Stratification)
+## Outcomes by Patient Severity (Stratification)
 
-**Your task:** Create a scatter plot showing post-surgical outcomes as a function of initial patient severity. This figure demonstrates the power of stratification. Include:
+The scatter plot shows post-surgical outcomes as a function of initial patient severity. This figure demonstrates the power of stratification. It includes:
 
 - X-axis: Initial Patient Severity
 - Y-axis: Post-Surgical Symptom Score (Lower is Better)
@@ -386,17 +386,52 @@ The key to handling a common cause confounder is to stratify by the common cause
 #| fig-cap: "Post-Surgical Symptom Score (lower is better) by Patient and Severity"
 #| echo: true
 
-# TODO: Recover Figure 3 - Outcomes by patient severity (stratification)
-# Load observational data (already loaded above)
-# Create scatter plot with:
-#   - X-axis: Initial Patient Severity
-#   - Y-axis: Post-Surgical Symptom Score
-#   - Same color/marker scheme as previous figures
-#   - Mean lines and annotations
-#   - Shaded region from -1 to 1 on x-axis (use ax.axvspan or similar)
-#   - Professional styling
+import matplotlib.pyplot as plt
 
-# Hint: Use axvspan(-1, 1, alpha=0.15, color='gray', zorder=0) for the overlay
+# Create figure and axis
+fig, ax = plt.subplots(figsize=(10, 6))
+
+# Separate data by doctor
+dreamy_data = patients_df[patients_df['doctor_name'] == 'Doc Dreamy']
+duck_data = patients_df[patients_df['doctor_name'] == 'Doc Duck']
+
+# Add shaded region from -1 to 1 on x-axis (highlighting overlap region)
+ax.axvspan(-1, 1, alpha=0.15, color='gray', zorder=0)
+
+# Plot scatter points
+ax.scatter(dreamy_data['severity'], dreamy_data['post_surgical_score'], 
+           marker='o', color='#4E79A7', s=60, alpha=0.7, label='Doc Dreamy', zorder=3)
+ax.scatter(duck_data['severity'], duck_data['post_surgical_score'], 
+           marker='^', color='#E15759', s=60, alpha=0.7, label='Doc Duck', zorder=3)
+
+# Calculate means
+dreamy_mean = dreamy_data['post_surgical_score'].mean()
+duck_mean = duck_data['post_surgical_score'].mean()
+
+# Add horizontal mean lines
+ax.axhline(y=dreamy_mean, color='#4E79A7', linestyle='--', linewidth=2, alpha=0.8, zorder=2)
+ax.axhline(y=duck_mean, color='#E15759', linestyle='--', linewidth=2, alpha=0.8, zorder=2)
+
+# Add text annotations for means
+ax.text(patients_df['severity'].max() * 0.98, dreamy_mean, 
+        f'○ {dreamy_mean:.2f}', ha='right', va='bottom', 
+        fontsize=10, color='#4E79A7', fontweight='bold', 
+        bbox=dict(boxstyle='round,pad=0.3', facecolor='white', alpha=0.8, edgecolor='#4E79A7'))
+ax.text(patients_df['severity'].max() * 0.98, duck_mean, 
+        f'△ {duck_mean:.2f}', ha='right', va='top', 
+        fontsize=10, color='#E15759', fontweight='bold',
+        bbox=dict(boxstyle='round,pad=0.3', facecolor='white', alpha=0.8, edgecolor='#E15759'))
+
+# Styling
+ax.set_xlabel('Initial Patient Severity', fontsize=12, fontweight='bold')
+ax.set_ylabel('Post-Surgical Symptom Score (Lower is Better)', fontsize=12, fontweight='bold')
+ax.set_title('Post-Surgical Symptom Score by Patient Severity', fontsize=14, fontweight='bold', pad=15)
+ax.grid(True, alpha=0.3, linestyle='-', linewidth=0.5)
+ax.legend(loc='best', fontsize=10, framealpha=0.9)
+
+# Adjust layout
+plt.tight_layout()
+fig
 
 ```
 
