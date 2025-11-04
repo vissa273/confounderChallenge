@@ -1,6 +1,5 @@
 ---
-title: "Confounder & Randomization Challenge"
-subtitle: "Recovering Lost Figures: Visualizing Confounders and Causal Inference"
+title: "Using Randomization & Stratification to Overcome A Common Cause Confounder"
 format:
   html: default
 bibliography: references.bib
